@@ -14,7 +14,7 @@ import HRAdminPage from "./pages/HRAdminPage";
 
 const Forbidden = () => <div style={{ padding: 24 }}>접근 권한이 없습니다.</div>;
 const NotFound =  () => <div style={{ padding: 24 }}>페이지를 찾을 수 없습니다.</div>;
-
+//hghgj
 export default function App() {
   return (
     <AuthProvider>

@@ -117,9 +117,9 @@ export function injectCleanTheme() {
   .mgr .shell{background:var(--bg);min-height:calc(100vh - 3rem)}
   .mgr .header{display:flex;justify-content:space-between;align-items:center;margin:0 0 16px}
   .mgr .title{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:.2px}
-  .mgr .tabs{display:flex;gap:12px}
-  .mgr .tab{border:2px solid var(--line);background:var(--chip);border-radius:999px;padding:16px 24px;font-weight:800;font-size:17px;color:var(--ink);cursor:pointer}
-  .mgr .tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 10px rgba(30,58,138,.25)}
+  .mgr .tabs{display:flex;gap:8px}
+  .mgr .tab{border:2px solid var(--line);background:#fff;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;color:#334155;cursor:pointer}
+  .mgr .tab[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 2px 10px rgba(37,99,235,.25)}
   .mgr .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 14px}
   .mgr .sel,.mgr .inp{border:2px solid var(--line);border-radius:12px;padding:12px 16px;background:#fff;font-weight:700;color:#0f172a}
   .mgr .inp{width:100%;max-width:320px}
