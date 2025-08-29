@@ -172,12 +172,12 @@ export default function ManagerPage() {
                     <thead>
                       <tr>
                         <th>신청일</th><th>사번</th><th>이름</th><th>부서</th><th>직급</th>
-                        <th>연차종류</th><th>기간</th><th>상태</th><th>작업</th>
+                        <th>연차종류</th><th>기간</th><th>서명</th><th>상태</th><th>작업</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filtered.length===0 ? (
-                        <tr><td colSpan={9} style={{padding:12, color:"#94a3b8"}}>표시할 데이터가 없습니다.</td></tr>
+                        <tr><td colSpan={10} style={{padding:12, color:"#94a3b8"}}>표시할 데이터가 없습니다.</td></tr>
                       ) : filtered.map(r=>{
                         const pending = r.status === "Pending";
                         return (
@@ -189,6 +189,7 @@ export default function ManagerPage() {
                             <td>{r.position}</td>
                             <td>{r.leaveType}</td>
                             <td>{r.startDate} ~ {r.endDate}</td>
+                            <td>{r.signature ? <img className="sig-thumb" src={r.signature} alt="sign" /> : <span style={{ color:"#94a3b8" }}>없음</span>}</td>
                             <td><StatusBadge s={r.status as Status} /></td>
                             <td style={{display:"flex", gap:8}}>
                               {pending ? (

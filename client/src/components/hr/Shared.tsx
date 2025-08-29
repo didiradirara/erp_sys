@@ -232,7 +232,7 @@ export function SignaturePad({
     (e.target as HTMLCanvasElement).releasePointerCapture(e.pointerId);
     const cvs = ref.current!;
     const trimmed = trimSignatureCanvas(cvs, targetCssHeight);
-    onChange(trimmed);
+    if (trimmed) onChange(trimmed);
   };
 
   const clear = (e?: React.MouseEvent) => {
