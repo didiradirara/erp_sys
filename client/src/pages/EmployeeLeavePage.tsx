@@ -54,7 +54,6 @@ export default function EmployeeLeavePage() {
   }
 
   return (
-    <>
       <form className="card" onSubmit={submitLeave} style={{marginBottom:16}}>
         <div className="card-body" style={{display:"grid", gap:10}}>
           <select className="sel" value={form.leaveType} onChange={e=>setForm(s=>({...s, leaveType:e.target.value}))}>
@@ -72,7 +71,6 @@ export default function EmployeeLeavePage() {
           <button className="btn btn-primary">신청</button>
         </div>
       </form>
-
       <div className="card">
         <div className="card-body">
           {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : err ? (

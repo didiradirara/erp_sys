@@ -226,6 +226,7 @@ export default function HRAdminPage() {
             <span className="badge">표시 {filteredLeaves.length}건</span>
           </div>
 
+
           <div className="card">
             <div className="card-body">
               {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : error ? (
