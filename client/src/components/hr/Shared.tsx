@@ -118,15 +118,17 @@ export function injectCleanTheme() {
   .mgr .header{display:flex;justify-content:space-between;align-items:center;margin:0 0 16px}
   .mgr .title{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:.2px}
   .mgr .tabs{display:flex;gap:8px}
-  .mgr .tab{border:2px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-weight:800;color:#334155;cursor:pointer}
+  .mgr .tab{border:2px solid var(--line);background:#fff;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px;color:#334155;cursor:pointer}
   .mgr .tab[aria-pressed="true"]{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 2px 10px rgba(37,99,235,.25)}
   .mgr .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 14px}
-  .mgr .sel,.mgr .inp{border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;font-weight:700;color:#0f172a}
-  .mgr .inp{min-width:200px}
+  .mgr .sel,.mgr .inp{border:2px solid var(--line);border-radius:12px;padding:12px 16px;background:#fff;font-weight:700;color:#0f172a}
+  .mgr .inp{width:100%;max-width:320px}
   .mgr .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:2px solid var(--line);border-radius:999px;background:#fff;font-weight:800;color:#1e293b}
   .mgr .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:2px solid var(--line);border-radius:999px;background:var(--chip);color:#334155;font-weight:800}
   .mgr .card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.05)}
   .mgr .card-body{padding:12px}
+  .mgr .field{display:flex;flex-direction:column;gap:4px}
+  .mgr .field-label{font-weight:700;font-size:14px;color:#334155}
   .mgr .tbl-wrap{overflow:auto;border-radius:14px}
   .mgr table{width:100%;border-collapse:separate;border-spacing:0;background:#fff}
   .mgr thead th{position:sticky;top:0;background:#f8fafc;color:#0f172a;font-weight:900;font-size:14px;letter-spacing:.2px;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1}
@@ -157,11 +159,13 @@ export function injectCleanTheme() {
 
 /* ---------- Signature Pad ---------- */
 export function SignaturePad({
+  value = null,
   onChange,
   targetCssHeight = 60,
   padCssWidth = 520,
   padCssHeight = 180
 }: {
+  value?: string | null;
   onChange: (dataUrl: string | null) => void;
   targetCssHeight?: number;
   padCssWidth?: number;
@@ -187,6 +191,18 @@ export function SignaturePad({
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, padCssWidth, padCssHeight);
   }, [padCssWidth, padCssHeight]);
+
+  // 외부에서 value가 비워지면 캔버스도 초기화
+  React.useEffect(() => {
+    if (!value) {
+      const cvs = ref.current;
+      if (cvs) {
+        const ctx = cvs.getContext("2d")!;
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+      }
+    }
+  }, [value]);
 
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
@@ -219,7 +235,8 @@ export function SignaturePad({
     onChange(trimmed);
   };
 
-  const clear = () => {
+  const clear = (e?: React.MouseEvent) => {
+    e?.preventDefault();
     const cvs = ref.current!;
     const ctx = cvs.getContext("2d")!;
     ctx.fillStyle = "#fff";
@@ -239,7 +256,7 @@ export function SignaturePad({
         onPointerUp={onPointerUp}
       />
       <div style={{ marginTop: 8, display: "flex", gap: 8, justifyContent: "flex-end" }}>
-        <button className="btn-ghost" onClick={clear}>지우기</button>
+        <button type="button" className="btn-ghost" onClick={clear}>지우기</button>
       </div>
     </div>
   );
@@ -353,14 +370,7 @@ export function PageShell({
               {right}
             </div>
           )}
-
-          {/* 컨텐츠 카드 */}
-          <div className="card">
-            <div className="card-body">
-              {children}
-            </div>
-          </div>
-
+          {children}
         </div>
       </div>
     </div>

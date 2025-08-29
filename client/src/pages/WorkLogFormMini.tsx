@@ -1,9 +1,8 @@
 // src/components/WorkLogFormMini.tsx
 import React, { useState } from "react";
-import { API_BASE, jsonFetch, injectCleanTheme, SignaturePad } from "../components/hr/Shared";
+import { API_BASE, jsonFetch, SignaturePad } from "../components/hr/Shared";
 
 export default function WorkLogFormMini() {
-  injectCleanTheme();
   const [file, setFile] = useState<File | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -42,7 +41,7 @@ export default function WorkLogFormMini() {
     <form className="card" onSubmit={onSubmit}>
       <div className="card-body" style={{display:"grid", gap:10}}>
         <input className="inp" type="file" onChange={e=>setFile(e.target.files?.[0] ?? null)} />
-        <SignaturePad onChange={setSignature} />
+        <SignaturePad value={signature} onChange={setSignature} />
         <button className="btn btn-primary" disabled={busy}>{busy ? "제출 중…" : "제출"}</button>
       </div>
     </form>
