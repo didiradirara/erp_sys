@@ -1,9 +1,8 @@
 // src/components/WorkLogFormMini.tsx
 import React, { useState } from "react";
-import { API_BASE, jsonFetch, injectCleanTheme, SignaturePad } from "../components/hr/Shared";
+import { API_BASE, jsonFetch, SignaturePad } from "../components/hr/Shared";
 
 export default function WorkLogFormMini() {
-  injectCleanTheme();
   const [file, setFile] = useState<File | null>(null);
   const [signature, setSignature] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
