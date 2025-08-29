@@ -1,12 +1,14 @@
 // src/pages/EmployeeLeavePage.tsx
 import React, { useEffect, useState } from "react";
 import {
+
   API_BASE,
   STATUS_KO,
   Status,
   LeaveRequestAPI,
   jsonFetch,
   SignaturePad
+
 } from "../components/hr/Shared";
 
 export default function EmployeeLeavePage() {
@@ -23,9 +25,11 @@ export default function EmployeeLeavePage() {
     name: "",
     position: "",
     leaveType: "연차",
+
     startDate: today,
     endDate: today,
     note: "개인사유",
+
     handoverPerson: "",
     contact: "",
     signatureDataUrl: ""
@@ -72,6 +76,7 @@ export default function EmployeeLeavePage() {
   }
 
   return (
+
     <>
       <form className="card" onSubmit={submitLeave} style={{ marginBottom: 16 }}>
         <div className="card-body" style={{ display: "grid", gap: 12 }}>
