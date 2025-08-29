@@ -1,12 +1,14 @@
 // src/pages/EmployeeLeavePage.tsx
 import React, { useEffect, useState } from "react";
 import {
+
   API_BASE,
   STATUS_KO,
   Status,
   LeaveRequestAPI,
   jsonFetch,
   SignaturePad
+
 } from "../components/hr/Shared";
 
 export default function EmployeeLeavePage() {
@@ -72,7 +74,7 @@ export default function EmployeeLeavePage() {
   }
 
   return (
-    <>
+  
       <form className="card" onSubmit={submitLeave} style={{ marginBottom: 16 }}>
         <div className="card-body" style={{ display: "grid", gap: 10 }}>
           <input
@@ -163,7 +165,6 @@ export default function EmployeeLeavePage() {
           <button className="btn btn-primary">신청</button>
         </div>
       </form>
-
       <div className="card">
         <div className="card-body">
           {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : err ? (
