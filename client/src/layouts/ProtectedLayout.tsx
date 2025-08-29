@@ -10,9 +10,9 @@ const TabsBar: React.FC = () => {
   if (tabs.length <= 1) return null;
 
   return (
-    <div className="mgr" style={{ borderBottom: "1px solid #e5e7eb", background:"#fff" }}>
-      <div className="page-wrap" style={{ display:"flex", gap:12, alignItems:"center", justifyContent:"space-between" }}>
-        <div style={{ display:"flex", gap:8 }}>
+    <div className="mgr" style={{ borderBottom: "1px solid var(--line)", background:"var(--bg)", padding:"16px 0" }}>
+      <div className="page-wrap" style={{ display:"flex", gap:16, alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ display:"flex", gap:12 }}>
           {tabs.map(t => (
             <NavLink
               key={t.path}
@@ -20,13 +20,14 @@ const TabsBar: React.FC = () => {
               className={({ isActive }) => `tab ${isActive ? "active" : ""}`}
               style={({ isActive }) => ({
                 textDecoration: "none",
-                padding: "10px 14px",
+                padding: "14px 20px",
                 borderRadius: 999,
-                border: "2px solid #e5e7eb",
+                border: "2px solid var(--line)",
                 fontWeight: 800,
-                color: isActive ? "#fff" : "#334155",
-                background: isActive ? "#2563eb" : "#fff",
-                boxShadow: isActive ? "0 2px 10px rgba(37,99,235,.25)" : "none"
+                fontSize: 17,
+                color: isActive ? "#fff" : "var(--ink)",
+                background: isActive ? "var(--accent)" : "var(--chip)",
+                boxShadow: isActive ? "0 2px 10px rgba(30,58,138,.25)" : "none"
               })}
             >
               {t.label}
