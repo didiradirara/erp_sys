@@ -18,7 +18,24 @@ export default function EmployeeLeavePage() {
 
   // 폼 상태 (예시)
   const today = new Date().toISOString().split("T")[0];
-  const [form, setForm] = useState({
+
+  type FormState = {
+    dateRequested: string;
+    dept: string;
+    empId: string;
+    name: string;
+    position: string;
+    leaveType: string;
+    startDate: string;
+    endDate: string;
+    note: string;
+    handoverPerson: string;
+    contact: string;
+    signatureDataUrl: string;
+  };
+
+  const initialForm: FormState = {
+
     dateRequested: today,
     dept: "",
     empId: "",
@@ -29,11 +46,12 @@ export default function EmployeeLeavePage() {
     startDate: today,
     endDate: today,
     note: "개인사유",
-
     handoverPerson: "",
     contact: "",
-    signatureDataUrl: ""
-  });
+    signatureDataUrl: "",
+  };
+  const [form, setForm] = useState<FormState>(initialForm);
+
 
   async function loadMyRequests() {
     setLoading(true); setErr(null);
@@ -70,6 +88,7 @@ export default function EmployeeLeavePage() {
       }
       await loadMyRequests();
       alert("연차 신청이 접수되었습니다.");
+      setForm(initialForm);
     } catch(e:any) {
       alert(e?.message || "신청 실패");
     }
@@ -200,7 +219,9 @@ export default function EmployeeLeavePage() {
             </label>
             <label className="field">
               <span className="field-label">서명</span>
-              <SignaturePad onChange={sig => setForm(s => ({ ...s, signatureDataUrl: sig || "" }))} />
+
+              <SignaturePad value={form.signatureDataUrl} onChange={sig => setForm(s => ({ ...s, signatureDataUrl: sig || "" }))} />
+
             </label>
           <button className="btn btn-primary">신청</button>
         </div>

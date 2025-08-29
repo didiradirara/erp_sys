@@ -159,11 +159,13 @@ export function injectCleanTheme() {
 
 /* ---------- Signature Pad ---------- */
 export function SignaturePad({
+  value = null,
   onChange,
   targetCssHeight = 60,
   padCssWidth = 520,
   padCssHeight = 180
 }: {
+  value?: string | null;
   onChange: (dataUrl: string | null) => void;
   targetCssHeight?: number;
   padCssWidth?: number;
@@ -189,6 +191,18 @@ export function SignaturePad({
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, padCssWidth, padCssHeight);
   }, [padCssWidth, padCssHeight]);
+
+  // 외부에서 value가 비워지면 캔버스도 초기화
+  React.useEffect(() => {
+    if (!value) {
+      const cvs = ref.current;
+      if (cvs) {
+        const ctx = cvs.getContext("2d")!;
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, cvs.width, cvs.height);
+      }
+    }
+  }, [value]);
 
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
@@ -221,7 +235,8 @@ export function SignaturePad({
     onChange(trimmed);
   };
 
-  const clear = () => {
+  const clear = (e?: React.MouseEvent) => {
+    e?.preventDefault();
     const cvs = ref.current!;
     const ctx = cvs.getContext("2d")!;
     ctx.fillStyle = "#fff";
@@ -241,7 +256,7 @@ export function SignaturePad({
         onPointerUp={onPointerUp}
       />
       <div style={{ marginTop: 8, display: "flex", gap: 8, justifyContent: "flex-end" }}>
-        <button className="btn-ghost" onClick={clear}>지우기</button>
+        <button type="button" className="btn-ghost" onClick={clear}>지우기</button>
       </div>
     </div>
   );
