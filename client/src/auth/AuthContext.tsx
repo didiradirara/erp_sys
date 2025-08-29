@@ -23,7 +23,11 @@ type AuthCtx = {
 };
 
 const AuthContext = createContext<AuthCtx>({
-  user: null, token: null, loading: true, login: () => {}, logout: () => {}
+  user: null,
+  token: null,
+  loading: true,
+  login: (_t: string, _u: User) => {},
+  logout: () => {}
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
