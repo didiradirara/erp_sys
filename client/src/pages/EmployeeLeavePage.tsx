@@ -66,7 +66,13 @@ export default function EmployeeLeavePage() {
             </select>
             <input className="inp" type="date" value={form.startDate} onChange={e=>setForm(s=>({...s, startDate:e.target.value}))} />
             <input className="inp" type="date" value={form.endDate} onChange={e=>setForm(s=>({...s, endDate:e.target.value}))} />
-            <input className="inp" placeholder="비고" value={form.note} onChange={e=>setForm(s=>({...s, note:e.target.value}))} />
+            <input
+              className="inp"
+              placeholder="사유"
+              required
+              value={form.note}
+              onChange={e=>setForm(s=>({...s, note:e.target.value}))}
+            />
             <button className="btn btn-primary">신청</button>
           </div>
         </form>

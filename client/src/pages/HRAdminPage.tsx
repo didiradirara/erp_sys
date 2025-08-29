@@ -1,7 +1,9 @@
 // src/pages/HRAdminPage.tsx
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { useAuth } from "../auth/AuthContext";
 import {
   API_BASE, STATUS_KO, Status, LeaveRequestAPI, WorklogRow,
   dataUrlToUint8, fmtReqDate, fmtStart, fmtEnd,
@@ -10,6 +12,9 @@ import {
 
 export default function HRAdminPage() {
   injectCleanTheme();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => { logout(); navigate("/login"); };
 
   const [activeTab, setActiveTab] = useState<"leave"|"worklog">("leave");
 
@@ -195,11 +200,14 @@ export default function HRAdminPage() {
     <div className="page-wrap mgr">
       <div className="shell">
         <div className="header">
-          <div className="title">인사 관리자</div>
-          <div className="tabs">
-            <button className="tab" aria-pressed={activeTab==="leave"} onClick={()=>setActiveTab("leave")}>연차관리</button>
-            <button className="tab" aria-pressed={activeTab==="worklog"} onClick={()=>setActiveTab("worklog")}>근무일지</button>
+          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+            <div className="title">인사 관리자</div>
+            <div className="tabs">
+              <button className="tab" aria-pressed={activeTab==="leave"} onClick={()=>setActiveTab("leave")}>연차관리</button>
+              <button className="tab" aria-pressed={activeTab==="worklog"} onClick={()=>setActiveTab("worklog")}>근무일지</button>
+            </div>
           </div>
+          <button className="btn-ghost" onClick={handleLogout}>로그아웃</button>
         </div>
 
         {activeTab==="leave" ? (
