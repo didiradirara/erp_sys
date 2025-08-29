@@ -1,5 +1,7 @@
 // src/pages/ManagerPage.tsx
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import {
   API_BASE, Status, STATUS_KO, LeaveRequestAPI, WorklogRow,
   jsonFetch, injectCleanTheme, StatusBadge, SignaturePad
@@ -7,6 +9,9 @@ import {
 
 export default function ManagerPage() {
   injectCleanTheme();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => { logout(); navigate("/login"); };
 
   const [tab, setTab] = useState<"requests"|"worklogs">("requests");
 
@@ -140,11 +145,14 @@ export default function ManagerPage() {
     <div className="page-wrap mgr">
       <div className="shell">
         <div className="header">
-          <div className="title">상사 검토</div>
-          <div className="tabs">
-            <button className="tab" onClick={()=>setTab("requests")} aria-pressed={tab==="requests"}>연차 신청</button>
-            <button className="tab" onClick={()=>setTab("worklogs")} aria-pressed={tab==="worklogs"}>근무일지</button>
+          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+            <div className="title">상사 검토</div>
+            <div className="tabs">
+              <button className="tab" onClick={()=>setTab("requests")} aria-pressed={tab==="requests"}>연차 신청</button>
+              <button className="tab" onClick={()=>setTab("worklogs")} aria-pressed={tab==="worklogs"}>근무일지</button>
+            </div>
           </div>
+          <button className="btn-ghost" onClick={handleLogout}>로그아웃</button>
         </div>
 
         {tab==="requests" && (
