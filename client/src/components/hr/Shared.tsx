@@ -127,6 +127,8 @@ export function injectCleanTheme() {
   .mgr .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:2px solid var(--line);border-radius:999px;background:var(--chip);color:#334155;font-weight:800}
   .mgr .card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.05)}
   .mgr .card-body{padding:12px}
+  .mgr .field{display:flex;flex-direction:column;gap:4px}
+  .mgr .field-label{font-weight:700;font-size:14px;color:#334155}
   .mgr .tbl-wrap{overflow:auto;border-radius:14px}
   .mgr table{width:100%;border-collapse:separate;border-spacing:0;background:#fff}
   .mgr thead th{position:sticky;top:0;background:#f8fafc;color:#0f172a;font-weight:900;font-size:14px;letter-spacing:.2px;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1}

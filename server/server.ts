@@ -251,7 +251,9 @@ function ensureRole(roles: Role[]){
 // ---------------- App ----------------
 
 app.use(helmet());
-app.use(cors({ origin: VITE_ORIGIN, credentials: false }));
+const corsOptions = { origin: VITE_ORIGIN, credentials: false };
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' })); // dataURL 서명 대비
 app.use(morgan('dev'));
 

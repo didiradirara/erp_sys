@@ -25,9 +25,11 @@ export default function EmployeeLeavePage() {
     name: "",
     position: "",
     leaveType: "연차",
-    startDate: "",
-    endDate: "",
-    note: "",
+
+    startDate: today,
+    endDate: today,
+    note: "개인사유",
+
     handoverPerson: "",
     contact: "",
     signatureDataUrl: ""
@@ -74,97 +76,136 @@ export default function EmployeeLeavePage() {
   }
 
   return (
-  
+
+    <>
       <form className="card" onSubmit={submitLeave} style={{ marginBottom: 16 }}>
-        <div className="card-body" style={{ display: "grid", gap: 10 }}>
-          <input
-            className="inp"
-            type="date"
-            value={form.dateRequested}
-            onChange={e => setForm(s => ({ ...s, dateRequested: e.target.value }))}
-            required
-          />
-          <select
-            className="sel"
-            value={form.dept}
-            onChange={e => setForm(s => ({ ...s, dept: e.target.value }))}
-            required
-          >
-            {["개발팀", "생산지원팀", "생산팀", "공무팀"].map(d => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-          <input
-            className="inp"
-            placeholder="사번"
-            value={form.empId}
-            onChange={e => setForm(s => ({ ...s, empId: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            placeholder="이름"
-            value={form.name}
-            onChange={e => setForm(s => ({ ...s, name: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            placeholder="직급"
-            value={form.position}
-            onChange={e => setForm(s => ({ ...s, position: e.target.value }))}
-            required
-          />
-          <select
-            className="sel"
-            value={form.leaveType}
-            onChange={e => setForm(s => ({ ...s, leaveType: e.target.value }))}
-            required
-          >
-            {["연차", "반차", "병가", "경조사"].map(t => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-          <input
-            className="inp"
-            type="date"
-            value={form.startDate}
-            onChange={e => setForm(s => ({ ...s, startDate: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            type="date"
-            value={form.endDate}
-            onChange={e => setForm(s => ({ ...s, endDate: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            placeholder="연차사유"
-            value={form.note}
-            onChange={e => setForm(s => ({ ...s, note: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            placeholder="업무인수자"
-            value={form.handoverPerson}
-            onChange={e => setForm(s => ({ ...s, handoverPerson: e.target.value }))}
-            required
-          />
-          <input
-            className="inp"
-            placeholder="연락처"
-            value={form.contact}
-            onChange={e => setForm(s => ({ ...s, contact: e.target.value }))}
-            required
-            pattern="[0-9\-\s()+]{7,20}"
-          />
-          <SignaturePad onChange={sig => setForm(s => ({ ...s, signatureDataUrl: sig || "" }))} />
+        <div className="card-body" style={{ display: "grid", gap: 12 }}>
+          <label className="field">
+            <span className="field-label">작성날짜</span>
+            <input
+              className="inp"
+              type="date"
+              value={form.dateRequested}
+              onChange={e => setForm(s => ({ ...s, dateRequested: e.target.value }))}
+              required
+            />
+          </label>
+          <label className="field">
+            <span className="field-label">부서</span>
+            <select
+              className="sel"
+              value={form.dept}
+              onChange={e => setForm(s => ({ ...s, dept: e.target.value }))}
+              required
+            >
+              <option value="" disabled>부서 선택</option>
+              {["개발팀", "생산지원팀", "생산팀", "공무팀"].map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </label>
+            <label className="field">
+              <span className="field-label">사번</span>
+              <input
+                className="inp"
+                placeholder="예: 1001"
+                value={form.empId}
+                onChange={e => setForm(s => ({ ...s, empId: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">이름</span>
+              <input
+                className="inp"
+                placeholder="예: 홍길동"
+                value={form.name}
+                onChange={e => setForm(s => ({ ...s, name: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">직급</span>
+              <input
+                className="inp"
+                placeholder="예: 사원"
+                value={form.position}
+                onChange={e => setForm(s => ({ ...s, position: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">연차종류</span>
+              <select
+                className="sel"
+                value={form.leaveType}
+                onChange={e => setForm(s => ({ ...s, leaveType: e.target.value }))}
+                required
+              >
+                {["연차", "반차", "병가", "경조사"].map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span className="field-label">연차시작날짜</span>
+              <input
+                className="inp"
+                type="date"
+                value={form.startDate}
+                onChange={e => setForm(s => ({ ...s, startDate: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">마지막날짜</span>
+              <input
+                className="inp"
+                type="date"
+                value={form.endDate}
+                onChange={e => setForm(s => ({ ...s, endDate: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">연차사유</span>
+              <input
+                className="inp"
+                placeholder="예: 개인사유"
+                value={form.note}
+                onChange={e => setForm(s => ({ ...s, note: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">업무인수자</span>
+              <input
+                className="inp"
+                placeholder="예: 김대리"
+                value={form.handoverPerson}
+                onChange={e => setForm(s => ({ ...s, handoverPerson: e.target.value }))}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">연락처</span>
+              <input
+                className="inp"
+                placeholder="예: 010-1234-5678"
+                value={form.contact}
+                onChange={e => setForm(s => ({ ...s, contact: e.target.value }))}
+                required
+                pattern="[0-9\-\s()+]{7,20}"
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">서명</span>
+              <SignaturePad onChange={sig => setForm(s => ({ ...s, signatureDataUrl: sig || "" }))} />
+            </label>
           <button className="btn btn-primary">신청</button>
         </div>
       </form>
+
       <div className="card">
         <div className="card-body">
           {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : err ? (

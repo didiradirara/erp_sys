@@ -225,6 +225,7 @@ export default function HRAdminPage() {
             <button className="btn btn-ghost" onClick={loadLeaveRecent}>새로고침</button>
             <span className="badge">표시 {filteredLeaves.length}건</span>
           </div>
+
           <div className="card">
             <div className="card-body">
               {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : error ? (
