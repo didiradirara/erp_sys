@@ -1,12 +1,14 @@
 // src/pages/EmployeeLeavePage.tsx
 import React, { useEffect, useState } from "react";
 import {
+
   API_BASE,
   STATUS_KO,
   Status,
   LeaveRequestAPI,
   jsonFetch,
   SignaturePad
+
 } from "../components/hr/Shared";
 
 export default function EmployeeLeavePage() {
@@ -16,6 +18,7 @@ export default function EmployeeLeavePage() {
 
   // 폼 상태 (예시)
   const today = new Date().toISOString().split("T")[0];
+
   type FormState = {
     dateRequested: string;
     dept: string;
@@ -32,12 +35,14 @@ export default function EmployeeLeavePage() {
   };
 
   const initialForm: FormState = {
+
     dateRequested: today,
     dept: "",
     empId: "",
     name: "",
     position: "",
     leaveType: "연차",
+
     startDate: today,
     endDate: today,
     note: "개인사유",
@@ -46,6 +51,7 @@ export default function EmployeeLeavePage() {
     signatureDataUrl: "",
   };
   const [form, setForm] = useState<FormState>(initialForm);
+
 
   async function loadMyRequests() {
     setLoading(true); setErr(null);
@@ -89,6 +95,7 @@ export default function EmployeeLeavePage() {
   }
 
   return (
+
     <>
       <form className="card" onSubmit={submitLeave} style={{ marginBottom: 16 }}>
         <div className="card-body" style={{ display: "grid", gap: 12 }}>
@@ -212,7 +219,9 @@ export default function EmployeeLeavePage() {
             </label>
             <label className="field">
               <span className="field-label">서명</span>
+
               <SignaturePad value={form.signatureDataUrl} onChange={sig => setForm(s => ({ ...s, signatureDataUrl: sig || "" }))} />
+
             </label>
           <button className="btn btn-primary">신청</button>
         </div>
