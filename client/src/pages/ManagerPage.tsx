@@ -163,6 +163,7 @@ export default function ManagerPage() {
             <button className="btn btn-primary" onClick={loadRequests}>새로고침</button>
             {err && <span className="badge" style={{borderColor:"#fecaca", color:"#b91c1c"}}>오류: {err}</span>}
           </div>
+
           <div className="card">
             <div className="card-body">
               {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : (
