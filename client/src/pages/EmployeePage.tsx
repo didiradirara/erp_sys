@@ -1,10 +1,15 @@
 // src/EmployeePage.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { PageShell } from "../components/hr/Shared";
 import EmployeeLeavePage from "./EmployeeLeavePage";
 import WorkLogFormMini from "./WorkLogFormMini";
 
 export default function EmployeePage() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => { logout(); navigate("/login"); };
   const [tab, setTab] = React.useState<"leave" | "worklog">("leave");
 
   return (
@@ -16,6 +21,7 @@ export default function EmployeePage() {
       ]}
       activeTab={tab}
       onChangeTab={(k)=>setTab(k as any)}
+      right={<button className="btn-ghost" onClick={handleLogout}>로그아웃</button>}
     >
       {tab === "leave"   && <EmployeeLeavePage />}
       {tab === "worklog" && <WorkLogFormMini />}
