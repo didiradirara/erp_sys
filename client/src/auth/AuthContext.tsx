@@ -18,12 +18,16 @@ type AuthCtx = {
   user: User;
   token: string | null;
   loading: boolean;
-  login: (t: string) => void;
+  login: (t: string, u: User) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthCtx>({
-  user: null, token: null, loading: true, login: () => {}, logout: () => {}
+  user: null,
+  token: null,
+  loading: true,
+  login: (_t: string, _u: User) => {},
+  logout: () => {}
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -51,7 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     })();
   }, [token]);
 
-  const login  = (t: string) => { localStorage.setItem("lm_token", t); setToken(t); };
+  const login  = (t: string, u: User) => {
+    localStorage.setItem("lm_token", t);
+    setToken(t);
+    setUser(u);
+  };
   const logout = () => { localStorage.removeItem("lm_token"); setToken(null); setUser(null); };
 
   const value = useMemo(() => ({ user, token, loading, login, logout }), [user, token, loading]);

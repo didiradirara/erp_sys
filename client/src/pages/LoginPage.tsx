@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE, jsonFetch, injectCleanTheme } from "../components/hr/Shared";
 import { useAuth } from "../auth/AuthContext";
 
+import { defaultPathForRole } from "../auth/roles";
+
+
 export default function LoginPage() {
   injectCleanTheme();
   const { login } = useAuth();
@@ -26,12 +29,11 @@ export default function LoginPage() {
         const msg = typeof data === "string" ? data : (data as any)?.error || `HTTP ${status}`;
         throw new Error(msg);
       }
-      const j = data as any; // { ok:true, token, role }
-      if (!j?.ok || !j?.token) throw new Error((j && j.error) || "로그인 실패");
-      login(j.token);
-      const role = j.role || "employee";
-      localStorage.setItem("lm_role", role);
-      navigate(role === "manager" ? "/manager" : role === "hr" ? "/hr" : role === "admin" ? "/hr" : "/employee");
+      const j = data as any; // { ok:true, token, user }
+      if (!j?.ok || !j?.token || !j?.user) throw new Error((j && j.error) || "로그인 실패");
+      login(j.token, j.user);
+      navigate(defaultPathForRole(j.user.role || null));
+
     } catch (e: any) {
       setErr(e?.message || "로그인 실패");
     } finally {
