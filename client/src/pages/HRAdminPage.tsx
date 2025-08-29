@@ -7,11 +7,10 @@ import { useAuth } from "../auth/AuthContext";
 import {
   API_BASE, STATUS_KO, Status, LeaveRequestAPI, WorklogRow,
   dataUrlToUint8, fmtReqDate, fmtStart, fmtEnd,
-  jsonFetch, injectCleanTheme, StatusBadge
+  jsonFetch, StatusBadge, PageShell
 } from "../components/hr/Shared";
 
 export default function HRAdminPage() {
-  injectCleanTheme();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const handleLogout = () => { logout(); navigate("/login"); };
@@ -197,128 +196,125 @@ export default function HRAdminPage() {
   }
 
   return (
-    <div className="page-wrap mgr">
-      <div className="shell">
-        <div className="header">
-          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-            <div className="title">인사 관리자</div>
-            <div className="tabs">
-              <button className="tab" aria-pressed={activeTab==="leave"} onClick={()=>setActiveTab("leave")}>연차관리</button>
-              <button className="tab" aria-pressed={activeTab==="worklog"} onClick={()=>setActiveTab("worklog")}>근무일지</button>
+    <PageShell
+      title="인사 관리자"
+      tabs={[
+        { key: "leave", label: "연차관리" },
+        { key: "worklog", label: "근무일지" }
+      ]}
+      activeTab={activeTab}
+      onChangeTab={(k)=>setActiveTab(k as any)}
+      right={<button className="btn-ghost" onClick={handleLogout}>로그아웃</button>}
+    >
+      {activeTab==="leave" ? (
+        <>
+          <div className="toolbar">
+            <select className="sel" value={dept} onChange={e=>setDept(e.target.value as any)}>
+              {deptList.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <select className="sel" value={status} onChange={e=>setStatus(e.target.value as any)}>
+              {statusList.map(s => <option key={s} value={s}>{s === "전체" ? "전체" : STATUS_KO[s]}</option>)}
+            </select>
+            <input className="inp" placeholder="이름/사번 검색" value={q} onChange={e=>setQ(e.target.value)} />
+            <select className="sel" value={tpl} onChange={e=>setTpl(e.target.value)}>
+              {templates.length === 0
+                ? <option value="">(서버 템플릿 없음)</option>
+                : templates.map(name => <option key={name} value={name}>{name}</option>)}
+            </select>
+            <button className="btn btn-primary" onClick={loadTemplates}>템플릿 새로고침</button>
+            <button className="btn btn-ghost" onClick={loadLeaveRecent}>새로고침</button>
+            <span className="badge">표시 {filteredLeaves.length}건</span>
+          </div>
+
+
+          <div className="card">
+            <div className="card-body">
+              {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : error ? (
+                <div className="badge" style={{borderColor:"#fecaca", color:"#b91c1c"}}>오류: {error}</div>
+              ) : (
+                <div className="tbl-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>신청일</th><th>사번</th><th>이름</th><th>부서</th><th>직급</th>
+                        <th>연차종류</th><th>기간</th><th>상태</th><th>파일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredLeaves.length===0 ? (
+                        <tr><td colSpan={9} style={{padding:12, color:"#94a3b8"}}>표시할 데이터가 없습니다.</td></tr>
+                      ) : filteredLeaves.map(r=>(
+                        <tr key={r.requestId}>
+                          <td>{r.dateRequested}</td>
+                          <td>{r.empId}</td>
+                          <td>{r.name}</td>
+                          <td>{r.dept}</td>
+                          <td>{r.position}</td>
+                          <td>{r.leaveType}</td>
+                          <td>{r.startDate} ~ {r.endDate}</td>
+                          <td><StatusBadge s={r.status as Status} /></td>
+                          <td><button className="btn btn-blue" onClick={()=>makeExcelForRowFromTemplate(r)}>파일 만들기</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
-          <button className="btn-ghost" onClick={handleLogout}>로그아웃</button>
-        </div>
+        </>
+      ) : (
+        <>
+          <div className="toolbar">
+            <select className="sel" value={wlStatus} onChange={e=>setWlStatus(e.target.value as any)}>
+              {(["전체","Pending","Approved","Rejected"] as const).map(s =>
+                <option key={s} value={s}>{s==="전체" ? "전체" : STATUS_KO[s as Status]}</option>
+              )}
+            </select>
+            <button className="btn btn-ghost" onClick={loadWorklogs}>새로고침</button>
+            {wlErr && <span className="badge" style={{borderColor:'#fecaca', color:'#b91c1c'}}>오류: {wlErr}</span>}
+            <span className="badge">표시 {filteredWl.length}건</span>
+          </div>
 
-        {activeTab==="leave" ? (
-          <>
-            <div className="toolbar">
-              <select className="sel" value={dept} onChange={e=>setDept(e.target.value as any)}>
-                {deptList.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-              <select className="sel" value={status} onChange={e=>setStatus(e.target.value as any)}>
-                {statusList.map(s => <option key={s} value={s}>{s === "전체" ? "전체" : STATUS_KO[s]}</option>)}
-              </select>
-              <input className="inp" placeholder="이름/사번 검색" value={q} onChange={e=>setQ(e.target.value)} />
-              <select className="sel" value={tpl} onChange={e=>setTpl(e.target.value)}>
-                {templates.length === 0
-                  ? <option value="">(서버 템플릿 없음)</option>
-                  : templates.map(name => <option key={name} value={name}>{name}</option>)}
-              </select>
-              <button className="btn btn-primary" onClick={loadTemplates}>템플릿 새로고침</button>
-              <button className="btn btn-ghost" onClick={loadLeaveRecent}>새로고침</button>
-              <span className="badge">표시 {filteredLeaves.length}건</span>
-            </div>
-
-            <div className="card">
-              <div className="card-body">
-                {loading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : error ? (
-                  <div className="badge" style={{borderColor:"#fecaca", color:"#b91c1c"}}>오류: {error}</div>
-                ) : (
-                  <div className="tbl-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>신청일</th><th>사번</th><th>이름</th><th>부서</th><th>직급</th>
-                          <th>연차종류</th><th>기간</th><th>상태</th><th>파일</th>
+          <div className="card">
+            <div className="card-body">
+              {wlLoading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : (
+                <div className="tbl-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>작성일</th><th>이름</th><th>파일</th><th>서명</th><th>상태</th><th>작업</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredWl.length===0 ? (
+                        <tr><td colSpan={6} style={{padding:12, color:"#94a3b8"}}>표시할 근무일지가 없습니다.</td></tr>
+                      ) : filteredWl.map(w=>(
+                        <tr key={w.id}>
+                          <td>{w.date || w.createdAt?.slice(0,10)}</td>
+                          <td>{w.name}</td>
+                          <td><a className="btn-ghost" href={`${API_BASE}/static/${w.filePath}`} target="_blank" rel="noreferrer">열기</a></td>
+                          <td>{w.signature ? <img className="sig-thumb" src={w.signature} alt="sign" /> : <span style={{ color: "#94a3b8" }}>없음</span>}</td>
+                          <td><StatusBadge s={w.status as Status} /></td>
+                          <td style={{display:"flex", gap:8}}>
+                            {w.status==="Pending" ? (
+                              <>
+                                <button className="btn btn-blue" onClick={()=>updateWorklogStatus(w.id,"Approved")}>승인</button>
+                                <button className="btn btn-red" onClick={()=>updateWorklogStatus(w.id,"Rejected")}>거절</button>
+                              </>
+                            ) : <span style={{color:"#64748b"}}>-</span>}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {filteredLeaves.length===0 ? (
-                          <tr><td colSpan={9} style={{padding:12, color:"#94a3b8"}}>표시할 데이터가 없습니다.</td></tr>
-                        ) : filteredLeaves.map(r=>(
-                          <tr key={r.requestId}>
-                            <td>{r.dateRequested}</td>
-                            <td>{r.empId}</td>
-                            <td>{r.name}</td>
-                            <td>{r.dept}</td>
-                            <td>{r.position}</td>
-                            <td>{r.leaveType}</td>
-                            <td>{r.startDate} ~ {r.endDate}</td>
-                            <td><StatusBadge s={r.status as Status} /></td>
-                            <td><button className="btn btn-blue" onClick={()=>makeExcelForRowFromTemplate(r)}>파일 만들기</button></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          </>
-        ) : (
-          <>
-            <div className="toolbar">
-              <select className="sel" value={wlStatus} onChange={e=>setWlStatus(e.target.value as any)}>
-                {(["전체","Pending","Approved","Rejected"] as const).map(s =>
-                  <option key={s} value={s}>{s==="전체" ? "전체" : STATUS_KO[s as Status]}</option>
-                )}
-              </select>
-              <button className="btn btn-ghost" onClick={loadWorklogs}>새로고침</button>
-              {wlErr && <span className="badge" style={{borderColor:'#fecaca', color:'#b91c1c'}}>오류: {wlErr}</span>}
-              <span className="badge">표시 {filteredWl.length}건</span>
-            </div>
+          </div>
+        </>
+      )}
 
-            <div className="card">
-              <div className="card-body">
-                {wlLoading ? <div style={{color:"#94a3b8"}}>불러오는 중…</div> : (
-                  <div className="tbl-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>작성일</th><th>이름</th><th>파일</th><th>서명</th><th>상태</th><th>작업</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredWl.length===0 ? (
-                          <tr><td colSpan={6} style={{padding:12, color:"#94a3b8"}}>표시할 근무일지가 없습니다.</td></tr>
-                        ) : filteredWl.map(w=>(
-                          <tr key={w.id}>
-                            <td>{w.date || w.createdAt?.slice(0,10)}</td>
-                            <td>{w.name}</td>
-                            <td><a className="btn-ghost" href={`${API_BASE}/static/${w.filePath}`} target="_blank" rel="noreferrer">열기</a></td>
-                            <td>{w.signature ? <img className="sig-thumb" src={w.signature} alt="sign" /> : <span style={{ color: "#94a3b8" }}>없음</span>}</td>
-                            <td><StatusBadge s={w.status as Status} /></td>
-                            <td style={{display:"flex", gap:8}}>
-                              {w.status==="Pending" ? (
-                                <>
-                                  <button className="btn btn-blue" onClick={()=>updateWorklogStatus(w.id,"Approved")}>승인</button>
-                                  <button className="btn btn-red" onClick={()=>updateWorklogStatus(w.id,"Rejected")}>거절</button>
-                                </>
-                              ) : <span style={{color:"#64748b"}}>-</span>}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-
-      </div>
-    </div>
+    </PageShell>
   );
 }

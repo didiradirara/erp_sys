@@ -33,7 +33,6 @@ export default function LoginPage() {
       if (!j?.ok || !j?.token || !j?.user) throw new Error((j && j.error) || "로그인 실패");
       login(j.token, j.user);
       navigate(defaultPathForRole(j.user.role || null));
-
     } catch (e: any) {
       setErr(e?.message || "로그인 실패");
     } finally {
