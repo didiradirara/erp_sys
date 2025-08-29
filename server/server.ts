@@ -187,13 +187,21 @@ function cryptoRandomId(){
 }
 
 function seedUser(username: string, name: string, role: Role, password: string){
-  const exists = db.prepare('SELECT 1 FROM users WHERE username=?').get(username);
-  if (!exists) {
+  const rec = db.prepare('SELECT id, passwordHash FROM users WHERE username=?').get(username) as any;
+  const hash = bcrypt.hashSync(password, 10);
+  if (!rec) {
     const id = cryptoRandomId();
-    const hash = bcrypt.hashSync(password, 10);
     db.prepare('INSERT INTO users (id, username, name, role, passwordHash) VALUES (?,?,?,?,?)')
       .run(id, username, name, role, hash);
     console.log(`seeded user: ${username}/${role}`);
+  } else {
+    // 기존 계정이 있지만 비밀번호가 다르면 업데이트
+    const needUpdate = !bcrypt.compareSync(password, rec.passwordHash);
+    if (needUpdate) {
+      db.prepare('UPDATE users SET passwordHash=?, name=?, role=? WHERE username=?')
+        .run(hash, name, role, username);
+      console.log(`updated user password: ${username}`);
+    }
   }
 }
 seedUser('admin', '관리자', 'admin', 'admin123!');

@@ -1,9 +1,14 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_BASE, jsonFetch, injectCleanTheme } from "../components/hr/Shared";
+import { useAuth } from "../auth/AuthContext";
+import { defaultPathForRole } from "../auth/roles";
 
-export default function LoginPage({ onLoggedIn }: { onLoggedIn: (role: string) => void }) {
+export default function LoginPage() {
   injectCleanTheme();
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -22,11 +27,10 @@ export default function LoginPage({ onLoggedIn }: { onLoggedIn: (role: string) =
         const msg = typeof data === "string" ? data : (data as any)?.error || `HTTP ${status}`;
         throw new Error(msg);
       }
-      const j = data as any; // { ok:true, token, role }
-      if (!j?.ok || !j?.token) throw new Error((j && j.error) || "로그인 실패");
-      localStorage.setItem("lm_token", j.token);
-      localStorage.setItem("lm_role", j.role || "employee");
-      onLoggedIn(j.role || "employee");
+      const j = data as any; // { ok:true, token, user }
+      if (!j?.ok || !j?.token || !j?.user) throw new Error((j && j.error) || "로그인 실패");
+      login(j.token, j.user);
+      navigate(defaultPathForRole(j.user.role || null));
     } catch (e: any) {
       setErr(e?.message || "로그인 실패");
     } finally {
