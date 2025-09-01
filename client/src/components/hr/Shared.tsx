@@ -194,15 +194,35 @@ export function SignaturePad({
 
   // 외부에서 value가 비워지면 캔버스도 초기화
   React.useEffect(() => {
+    const cvs = ref.current;
+    if (!cvs) return;
+    const ctx = cvs.getContext("2d")!;
+    // 값이 없으면 캔버스 초기화
     if (!value) {
-      const cvs = ref.current;
-      if (cvs) {
-        const ctx = cvs.getContext("2d")!;
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, cvs.width, cvs.height);
-      }
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+      return;
     }
-  }, [value]);
+    // 값이 있으면 해당 이미지를 그려서 복원 (중앙 정렬)
+    const img = new Image();
+    img.onload = () => {
+      // 좌표계는 DPR 고려하여 scale 된 상태이므로 CSS 단위 사용
+      const cw = padCssWidth;
+      const ch = padCssHeight;
+      // 배경 지우기
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+      // 비율 유지하여 최대 높이(ch*0.8)로 표시
+      const maxH = Math.max(1, Math.floor(ch * 0.8));
+      const scale = Math.min(1, maxH / img.naturalHeight);
+      const dw = Math.max(1, Math.round(img.naturalWidth * scale));
+      const dh = Math.max(1, Math.round(img.naturalHeight * scale));
+      const dx = Math.round((cw - dw) / 2);
+      const dy = Math.round((ch - dh) / 2);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    };
+    img.src = value;
+  }, [value, padCssWidth, padCssHeight]);
 
   const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
