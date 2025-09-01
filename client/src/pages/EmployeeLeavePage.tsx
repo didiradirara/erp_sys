@@ -9,6 +9,7 @@ import {
   jsonFetch,
   SignaturePad
 
+
 } from "../components/hr/Shared";
 
 export default function EmployeeLeavePage() {
@@ -52,6 +53,28 @@ export default function EmployeeLeavePage() {
   };
   const [form, setForm] = useState<FormState>(initialForm);
 
+  // 로컬 임시 저장: 탭 전환/새로고침에도 서명 포함 폼 유지
+  const DRAFT_KEY = React.useRef<string>("emp_leave_draft_v1");
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY.current);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        // 최소 필드 체크
+        if (saved && typeof saved === 'object' && typeof saved.dateRequested === 'string') {
+          setForm(prev => ({ ...prev, ...saved }));
+        }
+      }
+    } catch { /* noop */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY.current, JSON.stringify(form));
+    } catch { /* storage full or disabled */ }
+  }, [form]);
+
 
   async function loadMyRequests() {
     setLoading(true); setErr(null);
@@ -89,13 +112,13 @@ export default function EmployeeLeavePage() {
       await loadMyRequests();
       alert("연차 신청이 접수되었습니다.");
       setForm(initialForm);
+      try { localStorage.removeItem(DRAFT_KEY.current); } catch {}
     } catch(e:any) {
       alert(e?.message || "신청 실패");
     }
   }
 
   return (
-
     <>
       <form className="card" onSubmit={submitLeave} style={{ marginBottom: 16 }}>
         <div className="card-body" style={{ display: "grid", gap: 12 }}>
