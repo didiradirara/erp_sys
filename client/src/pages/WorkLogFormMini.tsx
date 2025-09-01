@@ -42,7 +42,7 @@ export default function WorkLogFormMini() {
       <div className="card-body" style={{display:"grid", gap:10}}>
         <input className="inp" type="file" onChange={e=>setFile(e.target.files?.[0] ?? null)} />
 
-        <SignaturePad value={signature} onChange={setSignature} />
+        <SignaturePad value={signatureDataUrl} onChange={setSignatureDataUrl} />
 
         <button className="btn btn-primary" disabled={busy}>{busy ? "제출 중…" : "제출"}</button>
       </div>

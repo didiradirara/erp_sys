@@ -13,6 +13,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import { randomUUID as nodeRandomUUID } from 'crypto';
 import multer from 'multer';
 const app = express();
 
@@ -177,12 +178,13 @@ function ensureColumn(table: string, col: string, type: string){
     console.log(`[DB] ${table}.${col} added`);
   }
 }
-['handoverPerson','contact','signature','managerSignature','managerSignerId','managerSignedAt']
+['handoverPerson','contact','signature','managerSignature','managerSignerId','managerSignedAt','requesterId']
   .forEach(c => ensureColumn('requests', c, 'TEXT'));
 
 // ---------------- 기본 계정 시드 ----------------
 function cryptoRandomId(){
-  try { return (crypto as any).randomUUID(); } catch { /* no-op */ }
+  try { return nodeRandomUUID(); } catch { /* no-op */ }
+  try { return (globalThis as any)?.crypto?.randomUUID?.(); } catch { /* no-op */ }
   return 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
@@ -296,8 +298,19 @@ app.get('/api/requests', authRequired, (req, res) => {
   return res.json({ ok:true, data: rows });
 });
 
+// 내 신청 목록 (로그인 사용자 기준)
+app.get('/api/requests/mine', authRequired, (req: AuthedRequest, res) => {
+  try {
+    const rows = db.prepare('SELECT * FROM requests WHERE requesterId = ? ORDER BY dateRequested DESC')
+      .all(req.user!.id);
+    return res.json({ ok:true, data: rows });
+  } catch (e) {
+    return res.status(500).json({ ok:false, error:'Internal error' });
+  }
+});
+
 // 신규 신청 (서명 포함 저장)
-app.post('/api/requests', authRequired, ensureRole(['employee','admin']), (req, res) => {
+app.post('/api/requests', authRequired, ensureRole(['employee','admin']), (req: AuthedRequest, res) => {
   const p = createRequestSchema.safeParse(req.body);
   if (!p.success) {
     const flat = p.error.flatten();
@@ -307,10 +320,11 @@ app.post('/api/requests', authRequired, ensureRole(['employee','admin']), (req, 
   const requestId = cryptoRandomId();
 
   db.prepare(`INSERT INTO requests
-    (requestId,dateRequested,empId,name,dept,position,leaveType,startDate,endDate,note,status,handoverPerson,contact,signature)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    (requestId,dateRequested,empId,name,dept,position,leaveType,startDate,endDate,note,status,handoverPerson,contact,signature,requesterId)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
       requestId, r.dateRequested, r.empId, r.name, r.dept, r.position, r.leaveType,
-      r.startDate, r.endDate, r.note ?? '', r.status, r.handoverPerson, r.contact, r.signatureDataUrl
+      r.startDate, r.endDate, r.note ?? '', r.status, r.handoverPerson, r.contact, r.signatureDataUrl,
+      req.user!.id
     );
 
   const rec = db.prepare('SELECT * FROM requests WHERE requestId=?').get(requestId);
@@ -438,7 +452,7 @@ app.post('/api/worklogs', authRequired, upload.single('file'), (req: AuthedReque
     if (!/^data:image\/(png|jpeg);base64,/.test(signatureDataUrl || ''))
       return res.status(400).json({ ok:false, error:'서명 데이터가 필요합니다' });
 
-    const id = crypto.randomUUID();  // ✅ 진짜 고유 ID 생성
+    const id = cryptoRandomId();  // ✅ 진짜 고유 ID 생성
     const createdAt = new Date().toISOString();
     const filePath = `worklogs/${req.file.filename}`;
 
@@ -477,6 +491,3 @@ app.put('/api/worklogs/:id/status', authRequired, ensureRole(['manager','admin']
   const row = db.prepare('SELECT * FROM worklogs WHERE id=?').get(id);
   return res.json({ ok:true, data: row });
 });
-
-
-
