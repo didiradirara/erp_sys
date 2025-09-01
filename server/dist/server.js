@@ -155,7 +155,13 @@ const upload = (0, multer_1.default)({
 // });
 // 기존 테이블에 누락 컬럼 있으면 추가
 function ensureColumn(table, col, type) {
-    const exists = db.prepare(`SELECT 1 FROM pragma_table_info(?) WHERE name = ?`).get(table, col);
+    // PRAGMA table_info()는 파라미터 바인딩이 되지 않으므로 안전하게 식별자 검증 후 문자열로 사용
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(table)) {
+        throw new Error(`Invalid table name: ${table}`);
+    }
+    // 현재 테이블 컬럼 목록 조회
+    const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+    const exists = cols.some(c => c.name === col);
     if (!exists) {
         db.prepare(`ALTER TABLE ${table} ADD COLUMN ${col} ${type}`).run();
         console.log(`[DB] ${table}.${col} added`);
