@@ -48,9 +48,27 @@ export default function LoginPage() {
             <div className="title" style={{textAlign:"center"}}>로그인</div>
             <form onSubmit={doLogin}>
               <div style={{display:"grid", gap:10}}>
-                <input className="inp" placeholder="아이디" value={username} onChange={e=>setUsername(e.target.value)} />
-                <input className="inp" placeholder="비밀번호" type="password" value={password} onChange={e=>setPassword(e.target.value)} />
-                <button className="btn btn-primary" disabled={busy}>{busy ? "로그인 중…" : "로그인"}</button>
+                <input
+                  className="inp"
+                  placeholder="아이디"
+                  value={username}
+                  onChange={e=>setUsername(e.target.value)}
+                  required
+                />
+                <input
+                  className="inp"
+                  placeholder="비밀번호"
+                  type="password"
+                  value={password}
+                  onChange={e=>setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  className="btn btn-primary"
+                  disabled={busy || !username || !password}
+                >
+                  {busy ? "로그인 중…" : "로그인"}
+                </button>
                 {err && <div className="badge" style={{borderColor:"#fecaca", color:"#b91c1c"}}>오류: {err}</div>}
               </div>
             </form>
